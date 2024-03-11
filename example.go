@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/andrylavr/webapi/console"
 	"github.com/andrylavr/webapi/global"
+	"github.com/andrylavr/webapi/raf"
 	"github.com/andrylavr/webapi/webgl"
 	"math"
-	"syscall/js"
 )
 
 func main() {
@@ -231,20 +231,7 @@ func rotateY(m []float32, angle float32) {
 }
 
 func (cube *CubeTest1) RunAnimate() {
-	// Функция анимации
-	var animateFrame js.Func
-	animateFrame = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		// Делаем что-то анимационное, например, выводим прошедшее время в консоль
-
-		timeNew := float32(args[0].Float())
-		cube.Animate(timeNew)
-
-		// Планируем следующий кадр анимации
-		js.Global().Call("requestAnimationFrame", animateFrame)
-
-		return nil
-	})
-
-	// Первый запуск анимации
-	js.Global().Call("requestAnimationFrame", animateFrame)
+	for t := range raf.Channel {
+		cube.Animate(float32(t))
+	}
 }
